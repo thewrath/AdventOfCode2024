@@ -1,6 +1,6 @@
 #lang racket
 
-; Advent Of Code 2024 - Day 1 
+; Advent Of Code 2024 - Day 1
 ; Part 1
 
 ; There's just one problem: by holding the two lists up side by side (your puzzle input), it quickly becomes clear that the lists aren't very similar. Maybe you can help The Historians reconcile their lists?
@@ -30,17 +30,17 @@
 (define file-name "data.txt")
 
 (define (pair l)
-    (values (first l) (second l)))
+  (values (first l) (second l)))
 
 (define-values (list-a list-b)
-    (for/lists (list-a list-b)
-        ([i (file->lines file-name)])
-        (pair (map string->number (string-split i)))))
+  (for/lists (list-a list-b)
+             ([i (file->lines file-name)])
+    (pair (map string->number (string-split i)))))
 
-(define distance 
-    (for/sum (
-        [i (sort list-a <)]
-        [j (sort list-b <)]) (abs (- i j))))
+(define distance
+  (for/sum (
+            [i (sort list-a <)]
+            [j (sort list-b <)]) (abs (- i j))))
 
 (println (format "Distance: ~a" distance))
 
@@ -72,8 +72,8 @@
 ; The last number, 3, appears in the right list three times; the similarity score again increases by 9.
 ; So, for these example lists, the similarity score at the end of this process is 31 (9 + 4 + 0 + 0 + 9 + 9).
 
-(define similarity 
-    (for/sum ([x list-a])
-        (* x (count (λ (y) (= x y)) list-b))))
-        
+(define similarity
+  (for/sum ([x list-a])
+    (* x (count (λ (y) (= x y)) list-b))))
+
 (println (format "Similarity: ~a" similarity))

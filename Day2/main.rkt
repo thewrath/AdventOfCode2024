@@ -27,16 +27,19 @@
 ; 1 3 6 7 9: Safe because the levels are all increasing by 1, 2, or 3.
 ; So, in this example, 2 reports are safe.
 
-(define file-name "sample.txt")
+(define file-name "data.txt")
 
 (define (numberized l)
-    (map string->number l))
+  (map string->number l))
+
+(define (list-remove l i)
+  (append (take l i) (drop l (+ i 1))))
 
 (define (maptwo f l)
-    (for/and
-        ([i l] 
-         [j (cdr l)]) 
-        (f i j)))
+  (for/and
+      ([i l]
+       [j (cdr l)])
+    (f i j)))
 
 (define (all-increasing? l) (maptwo < l))
 
@@ -47,13 +50,13 @@
 (define (all-most-three? l) (maptwo (λ (i j) (>= 3 (abs (- i j)))) l))
 
 (define reports
-    ;; No function composition in racket lang :(
-    (map (λ (l) (numberized (string-split l)) ) (file->lines file-name)))
+  ;; No function composition in racket lang :(
+  (map (λ (l) (numberized (string-split l)) ) (file->lines file-name)))
 
 (define (is-report-safe? r)
-    (and 
-        (or (all-decreasing? r) (all-increasing? r))
-        (and (all-least-one? r) (all-most-three? r))))
+  (and
+   (or (all-decreasing? r) (all-increasing? r))
+   (and (all-least-one? r) (all-most-three? r))))
 
 (define safe-reports (filter is-report-safe? reports))
 
@@ -77,3 +80,34 @@
 ; 1 3 6 7 9: Safe without removing any level.
 ; Thanks to the Problem Dampener, 4 reports are actually safe!
 
+; This is also a valid solution for Part 1
+
+(define (is-diff-valid? i j)
+  (let ([diff (abs (- i j))]) (and (<= 1 diff) (>= 3 diff))))
+
+(define (get-invalid-index r)
+  (let* (
+         [f (car r)]
+         [s (cadr r)]
+         [dir (if (> f s) > <)])
+    (for/first
+        ([i r]
+         [j (cdr r)]
+         [index (in-naturals)]
+         #:when (not (and (dir i j) (is-diff-valid? i j))))
+      index)))
+
+(define (is-report-dampener-safe? r)
+  (let (
+        [invalid-index (get-invalid-index r)])
+    (or
+     (not invalid-index)
+     (not (get-invalid-index (list-remove r invalid-index)))
+     (and
+      (> invalid-index 0)
+      (not (get-invalid-index (list-remove r (- invalid-index 1)))))
+     (not (get-invalid-index (list-remove r (+ 1 invalid-index)))))))
+
+(define dampener-safe-reports (filter is-report-dampener-safe? reports))
+
+(println (format "Dampener safe reports count: ~a" (length dampener-safe-reports)))
