@@ -50,8 +50,7 @@
 (define (all-most-three? l) (maptwo (λ (i j) (>= 3 (abs (- i j)))) l))
 
 (define reports
-  ;; No function composition in racket lang :(
-  (map (λ (l) (numberized (string-split l)) ) (file->lines file-name)))
+  (map (compose numberized string-split) (file->lines file-name)))
 
 (define (is-report-safe? r)
   (and

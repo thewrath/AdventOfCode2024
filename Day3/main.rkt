@@ -71,8 +71,8 @@
         [(string=? i "do()") (set! keep? #t)])
       acc)))
 
-(define instructions-todo
+(define operations2
   (map (λ (s) (append* (regexp-match* #px"\\((\\d+),(\\d+)\\)" s #:match-select cdr)))
        (instructions-to-do instructions)))
 
-(println (format "Doable result: ~a" (compute (map numberized instructions-todo))))
+(println (format "Doable result: ~a" (compute (map numberized operations2))))
